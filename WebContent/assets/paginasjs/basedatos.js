@@ -1,5 +1,5 @@
 var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;;
-var version = 2;
+var version = 3;
 BaseDatos = {
 	crearBaseDatos: function(){
 		db = indexedDB.open("prueba_ua", version);
@@ -136,16 +136,22 @@ BaseDatos = {
 	},
 	
 	borrarBaseDatos:function(){
-		var req = indexedDB.deleteDatabase("prueba_ua");
-		req.onsuccess = function () {
-		    console.log("Deleted database successfully");
-		};
-		req.onerror = function () {
-		    console.log("Couldn't delete database");
-		};
-		req.onblocked = function () {
-		    console.log("Couldn't delete database due to the operation being blocked");
-		};
+		var db;
+		var request = indexedDB.open("prueba_ua", version);  
+		request.onsuccess = function (e) {
+			db = request.result;
+			var transaction = db.transaction(['pedidos'], 'readwrite');
+			var objStore = transaction.objectStore('pedidos');
+			var Newrequest = objStore.clear( );
+			Newrequest.onsuccess = function(e) {
+		    	console.log("Registros Borrado");
+		    
+		    };
+		    Newrequest.onerror = function(e){
+		    	console.log('Error iBorrando en la base de datos');
+		    	
+		    };
+		}
 	},
 	
 	addCommas:function (nStr)
